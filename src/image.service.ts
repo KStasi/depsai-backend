@@ -18,10 +18,19 @@ export class ImageService {
       '../scripts',
       'build-image-for-golem.sh',
     );
+    const dockerFilePath = path.join(
+      __dirname,
+      '../tmp',
+      `${dockerFileName}.tmp`,
+    );
 
     const { stderr, stdout } = await execFilePromise(
-      `sh ${scriptPath} ${dockerFileName} ${imageName}`,
+      `sh ${scriptPath} ${imageName} ${dockerFilePath}`,
     );
+
+    console.log('stdout:', stdout);
+    console.log('stderr:', stderr);
+
     return imageName;
   }
   async removeTmpDokerfile(dockerFileName: string): Promise<void> {
