@@ -10,7 +10,6 @@ DOCKERFILE_NAME=${2:-Dockerfile}
 
 docker build ./tmp/ -t $DOCKER_IMAGE -f $DOCKERFILE_NAME
 
-gvmkit-build $DOCKER_IMAGE
 gvmkit-build $DOCKER_IMAGE --push --nologin
 
 echo "Image $DOCKER_IMAGE build for Golem."

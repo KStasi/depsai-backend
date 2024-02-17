@@ -2,11 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { RedisService } from './redis.service';
 import { DeployParams, GetPaymentAddressParams } from './types';
 import { MnemonicService } from './mnemonic.service';
-import {
-  buildImageForGolem,
-  createDockerfileForGolem,
-} from './image-processors';
 import { EncryptionService } from './encryption.service';
+import { ImageService } from './image.service';
 
 @Injectable()
 export class AppService {
@@ -14,6 +11,7 @@ export class AppService {
     private readonly redisService: RedisService,
     private readonly mnemonicService: MnemonicService,
     private readonly encryptionService: EncryptionService,
+    private readonly imageService: ImageService,
   ) {}
 
   async getHello(): Promise<string> {
@@ -22,11 +20,11 @@ export class AppService {
 
   async deploy(params: DeployParams): Promise<string> {
     const image = params.image;
-    const dockerFileName = await createDockerfileForGolem(image);
-    const imageName = await buildImageForGolem(dockerFileName);
-    // build image
-    // push to registry
-    // remove tmp dockerfile
+    const dockerFileName =
+      await this.imageService.createDockerfileForGolem(image);
+    const imageName =
+      await this.imageService.buildImageForGolem(dockerFileName);
+    await this.imageService.removeTmpDokerfile(dockerFileName);
     return imageName;
   }
 

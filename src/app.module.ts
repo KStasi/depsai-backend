@@ -7,6 +7,7 @@ import { redisStore } from 'cache-manager-redis-store';
 import { RedisService } from './redis.service';
 import { MnemonicService } from './mnemonic.service';
 import { EncryptionService } from './encryption.service';
+import { ImageService } from './image.service';
 
 export const RedisOptions: CacheModuleAsyncOptions = {
   isGlobal: true,
@@ -31,6 +32,12 @@ export const RedisOptions: CacheModuleAsyncOptions = {
     CacheModule.registerAsync(RedisOptions),
   ],
   controllers: [AppController],
-  providers: [AppService, RedisService, MnemonicService, EncryptionService],
+  providers: [
+    AppService,
+    RedisService,
+    MnemonicService,
+    EncryptionService,
+    ImageService,
+  ],
 })
 export class AppModule {}
