@@ -15,7 +15,7 @@ export class ImageService {
     const imageName = `golem-${Math.random().toString(36).substring(7)}`;
     const scriptPath = path.join(
       __dirname,
-      '../../scripts',
+      '../scripts',
       'build-image-for-golem.sh',
     );
 
@@ -25,7 +25,7 @@ export class ImageService {
     return imageName;
   }
   async removeTmpDokerfile(dockerFileName: string): Promise<void> {
-    const filePath = path.join(__dirname, '../../tmp', dockerFileName);
+    const filePath = path.join(__dirname, '../tmp', `${dockerFileName}.tmp`);
     fs.unlinkSync(filePath);
   }
 
@@ -33,7 +33,7 @@ export class ImageService {
     const dockerFileName = generateRandomDockerFileName();
     const scriptPath = path.join(
       __dirname,
-      '../../scripts',
+      '../scripts',
       'create-tmp-docker-file.sh',
     );
 

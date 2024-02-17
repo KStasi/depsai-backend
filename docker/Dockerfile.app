@@ -16,6 +16,8 @@ RUN npm install -g gvmkit-build
 
 RUN pnpm install
 
+RUN mkdir -p /usr/src/app/tmp
+
 # RUN pnpm run build
 
 # CMD ["sh", "-c", "pnpm start"]
