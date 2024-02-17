@@ -10,3 +10,25 @@ services:
     expose:
       - '6379'
     restart: on-failure
+  yagna:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.yagna
+    ports:
+      - '7477:7477'
+    expose:
+      - '7477'
+    restart: on-failure
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.app
+    ports:
+      - '3000:3000'
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      - redis
+      - yagna
+    restart: on-failure
