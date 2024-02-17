@@ -41,6 +41,8 @@ export class ImageService {
       `sh ${scriptPath} ${baseImage} ${dockerFileName}`,
     );
 
+    console.log('stdout:', stdout);
+
     return dockerFileName;
   }
 }

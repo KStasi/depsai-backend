@@ -8,6 +8,7 @@ import { RedisService } from './redis.service';
 import { MnemonicService } from './mnemonic.service';
 import { EncryptionService } from './encryption.service';
 import { ImageService } from './image.service';
+import { ChainService } from './chain.service';
 
 export const RedisOptions: CacheModuleAsyncOptions = {
   isGlobal: true,
@@ -38,6 +39,7 @@ export const RedisOptions: CacheModuleAsyncOptions = {
     MnemonicService,
     EncryptionService,
     ImageService,
+    ChainService,
   ],
 })
 export class AppModule {}

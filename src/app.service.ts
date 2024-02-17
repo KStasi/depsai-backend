@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { RedisService } from './redis.service';
-import { DeployParams, GetPaymentAddressParams } from './types';
+import { DeployParams, GetPaymentAddressParams, WithdrawParams } from './types';
 import { MnemonicService } from './mnemonic.service';
 import { EncryptionService } from './encryption.service';
 import { ImageService } from './image.service';
+import { ChainService } from './chain.service';
 
 @Injectable()
 export class AppService {
@@ -12,6 +13,7 @@ export class AppService {
     private readonly mnemonicService: MnemonicService,
     private readonly encryptionService: EncryptionService,
     private readonly imageService: ImageService,
+    private readonly chainService: ChainService,
   ) {}
 
   async getHello(): Promise<string> {
@@ -28,7 +30,7 @@ export class AppService {
     return imageName;
   }
 
-  async getAddress(params: GetPaymentAddressParams): Promise<string> {
+  async deposit(params: GetPaymentAddressParams): Promise<string> {
     const user = params.user;
 
     const storedAddress: string = await this.redisService.get(`pa-${user}`);
@@ -46,5 +48,23 @@ export class AppService {
     );
     await this.redisService.set(`pa-${user}`, paymentAddress);
     return paymentAddress;
+  }
+
+  async withdraw(params: WithdrawParams): Promise<string> {
+    const user = params.user;
+
+    const storedWallet: string = await this.redisService.get(`ph-${user}`);
+    if (storedWallet) {
+      throw new BadRequestException('account is empty');
+    }
+
+    const phrase = await this.encryptionService.decrypt(storedWallet);
+    const wallet = this.mnemonicService.createWallet(phrase);
+    return await this.chainService.transfer(
+      wallet.signingKey.privateKey,
+      user,
+      params.asset,
+      params.amount,
+    );
   }
 }

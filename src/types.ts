@@ -5,3 +5,8 @@ export type DeployParams = {
 export type GetPaymentAddressParams = {
   user: string;
 };
+export type WithdrawParams = {
+  user: string;
+  asset: string;
+  amount: string;
+};
