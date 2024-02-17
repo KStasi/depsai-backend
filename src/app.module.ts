@@ -5,6 +5,7 @@ import { CacheModule, CacheModuleAsyncOptions } from '@nestjs/cache-manager';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { redisStore } from 'cache-manager-redis-store';
 import { RedisService } from './redis.service';
+import { MnemonicService } from './mnemonic.service';
 
 export const RedisOptions: CacheModuleAsyncOptions = {
   isGlobal: true,
@@ -29,6 +30,6 @@ export const RedisOptions: CacheModuleAsyncOptions = {
     CacheModule.registerAsync(RedisOptions),
   ],
   controllers: [AppController],
-  providers: [AppService, RedisService],
+  providers: [AppService, RedisService, MnemonicService],
 })
 export class AppModule {}
