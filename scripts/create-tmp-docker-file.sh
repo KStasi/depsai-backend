@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# Check if exactly one argument is given
-if [ "$#" -ne 1 ]; then
-    echo "Usage: $0 <docker_image>"
+if [ "$#" -lt 1 ]; then
+    echo "Usage: $0 <docker_image> [dockerfile_name]"
     exit 1
 fi
 
-# Get arguments
 DOCKER_IMAGE=$1
+DOCKERFILE_NAME=${2:-Dockerfile}
+
 
 # Create a Dockerfile
-cat > Dockerfile.tmp <<EOF
+cat > ./tmp/$DOCKERFILE_NAME.tmp <<EOF
 FROM $DOCKER_IMAGE
 VOLUME /golem/input /golem/output /golem/work
 # WORKDIR /golem/work

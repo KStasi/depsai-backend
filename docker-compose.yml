@@ -31,4 +31,6 @@ services:
     depends_on:
       - redis
       - yagna
+    volumes:
+      - ./src:/usr/src/app/src
     restart: on-failure

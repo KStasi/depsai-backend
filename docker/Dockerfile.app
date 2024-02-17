@@ -6,12 +6,17 @@ RUN apk add --no-cache docker-cli docker openrc
 
 RUN rc-update add docker boot
 
-COPY package*.json ./
-
-RUN npm install
-
 COPY . .
 
-RUN npm run build
+RUN chmod +x ./scripts/create-tmp-docker-file.sh
 
-CMD ["sh", "-c", "pnpm start"]
+RUN npm install -g pnpm
+
+RUN npm install -g gvmkit-build
+
+RUN pnpm install
+
+# RUN pnpm run build
+
+# CMD ["sh", "-c", "pnpm start"]
+CMD ["sh", "-c", "pnpm run start:dev"]
