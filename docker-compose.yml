@@ -35,4 +35,5 @@ services:
       - yagna
     volumes:
       - ./src:/usr/src/app/src
+      - /var/run/docker.sock:/var/run/docker.sock
     restart: on-failure
