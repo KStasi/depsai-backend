@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { RedisService } from './redis.service';
+import { DeployParams } from './types';
 import { MnemonicService } from './mnemonic.service';
 
 @Injectable()
@@ -19,5 +20,10 @@ export class AppService {
     console.log(wallet);
 
     return `Hello World! ${address}`;
+  }
+
+  async deploy(params: DeployParams): Promise<string> {
+    const image = params.image;
+    return 'Hello World!';
   }
 }
