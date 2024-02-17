@@ -1,0 +1,30 @@
+# Use Ubuntu as the base image
+FROM ubuntu:latest
+
+# Install dependencies
+RUN apt-get update && \
+    apt-get install -y \
+    curl \
+    software-properties-common \
+    apt-transport-https \
+    ca-certificates \
+    lsb-release
+
+# Accept Yagna's terms of service and install Yagna
+ENV GOLEM_ACCEPT_TOS=yes
+RUN curl -sSf https://join.golem.network/as-requestor | bash - || true
+
+# Copy the entrypoint script into the container
+COPY src/scripts/yagna-entrypoin.sh /entrypoint.sh
+
+# Make the entrypoint script executable
+RUN chmod +x /entrypoint.sh
+
+# Set the working directory
+WORKDIR /app
+
+# Set the entrypoint script
+ENTRYPOINT ["/entrypoint.sh"]
+
+# Default command
+CMD ["tail", "-f", "/dev/null"]
