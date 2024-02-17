@@ -5,8 +5,8 @@ if [ "$#" -lt 1 ]; then
     exit 1
 fi
 
-DOCKERFILE_NAME=${2:-Dockerfile}
 DOCKER_IMAGE=$1
+DOCKERFILE_NAME=${2:-Dockerfile}
 
 docker build ./tmp/ -t $DOCKER_IMAGE -f $DOCKERFILE_NAME
 

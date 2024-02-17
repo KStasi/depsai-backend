@@ -3,25 +3,22 @@ const path = require('node:path');
 const util = require('node:util');
 
 const execFilePromise = util.promisify(exec);
-const generateRandomDockerFileName = (): string =>
-  `Dockerfile-${Math.random().toString(36).substring(7)}`;
 
 export const buildImageForGolem = async (
-  baseImage: string,
+  dockerFileName: string,
 ): Promise<string> => {
-  const dockerFileName = generateRandomDockerFileName();
+  const imageName = `golem-${Math.random().toString(36).substring(7)}`;
   const scriptPath = path.join(
     __dirname,
     '../../scripts',
-    'create-tmp-docker-file.sh',
+    'build-image-for-golem.sh',
   );
-
-  console.log(scriptPath);
-  console.log(dockerFileName);
 
   const { stderr, stdout } = await execFilePromise(
-    `sh ${scriptPath} ${baseImage} ${dockerFileName}`,
+    `sh ${scriptPath} ${dockerFileName} ${imageName}`,
   );
-
-  return dockerFileName;
+  console.log(stderr);
+  console.log(stdout);
+  console.log('Image built:', imageName);
+  return imageName;
 };

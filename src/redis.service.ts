@@ -27,7 +27,7 @@ export class RedisService {
     }
   }
 
-  async set<T extends object>(key: string, value: T) {
+  async set<T extends object | string>(key: string, value: T) {
     const stringValue = JSON.stringify(value);
 
     return await this.client.set(key, stringValue);

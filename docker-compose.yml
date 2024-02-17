@@ -28,6 +28,8 @@ services:
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      ENCRYPTION_KEY: 51a800c09e9f9baf999d48bbd871d392f1c12df8c9687efe10ddab45ec3d8833
+      ENCRYPTION_IV: 9e07ce2856e1edfa91535cdd660d5721
     depends_on:
       - redis
       - yagna
