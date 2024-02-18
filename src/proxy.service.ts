@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import * as path from 'path';
+import { ChildConfig, DeployConfig } from './types';
 
 const [node, pathToFile] = process.argv;
 const executorPath = path.join(pathToFile, '../../executor/executor.mjs');
@@ -31,11 +32,7 @@ export class ProxyService {
     });
   }
 
-  registerChild(
-    networkId: string,
-    port: number,
-    child: ChildProcessWithoutNullStreams,
-  ) {
+  registerChild(networkId: string, port: number, child: ChildProcessWithoutNullStreams) {
     this.childMap.set(networkId, child);
     this.portMap.set(networkId, port);
 
@@ -45,18 +42,31 @@ export class ProxyService {
     });
   }
 
-  async createChild() {
+  prepareConfig(config: DeployConfig): ChildConfig {
+    return {
+      PORT: `${this.startChildPort + this.currentChildId}`,
+      YAGNA_APPKEY: process.env.YAGNA_AUTOCONF_APPKEY,
+      RUN_COMMAND: config.command,
+      PACKAGE: config.package,
+      USER_PORT: config.port,
+      MIN_MEM_GIB: config.minMemGib,
+      MIN_STORAGE_GIB: config.minStorageGib,
+      MIN_CPU_THREADS: config.minCpuThreads,
+      MIN_CPU_CORES: config.minCpuCores,
+      BUDGET: config.budget,
+    };
+  }
+
+  async createChild(config: DeployConfig) {
     const childPort = this.startChildPort + this.currentChildId;
     //node --loader ts-node/esm executor/executor.ts
+
+    const env = this.prepareConfig(config);
 
     const child = spawn(node, [/*'--loader', 'ts-node/esm'*/ executorPath], {
       env: {
         ...process.env,
-        PORT: `${childPort}`,
-        YAGNA_APPKEY: process.env.YAGNA_AUTOCONF_APPKEY,
-        USER_PORT: '7878',
-        RUN_COMMAND: 'npm run start',
-        PACKAGE: 'd7f78a202dd00ce8d979db5d1a31388d408d989f9fd2cc8596c43517',
+        ...env,
       },
       detached: true,
       stdio: ['ignore'],

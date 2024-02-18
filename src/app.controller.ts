@@ -15,21 +15,13 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get('create')
-  async create(): Promise<{
-    link: string;
-  }> {
-    return this.proxyService.createChild();
-  }
-
   @Post('deploy')
   async deploy(@Body() params: DeployParams): Promise<{
-    imageHash: string;
+    link: string;
   }> {
-    const imageHash = await this.appService.deploy(params);
-
+    const link = await this.appService.deploy(params);
     return {
-      imageHash,
+      link,
     };
   }
 
