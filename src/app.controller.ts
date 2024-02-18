@@ -1,6 +1,12 @@
 import { Controller, Get, Query, Post, Body } from '@nestjs/common';
 import { AppService } from './app.service';
-import { DeployParams, GetPaymentAddressParams, WithdrawParams } from './types';
+import {
+  DeployParams,
+  DeploymentDetails,
+  DeploymentsParams,
+  GetPaymentAddressParams,
+  WithdrawParams,
+} from './types';
 import { ProxyService } from './proxy.service';
 
 @Controller()
@@ -34,6 +40,11 @@ export class AppController {
     return {
       link,
     };
+  }
+
+  @Get('deployments')
+  async deployments(@Query() params: DeploymentsParams): Promise<DeploymentDetails[]> {
+    return this.appService.deployments(params);
   }
 
   @Get('deposit')

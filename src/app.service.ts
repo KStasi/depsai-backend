@@ -1,6 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { RedisService } from './redis.service';
-import { ChildConfig, DeployParams, GetPaymentAddressParams, WithdrawParams } from './types';
+import {
+  ChildConfig,
+  DeployParams,
+  DeploymentDetails,
+  GetPaymentAddressParams,
+  WithdrawParams,
+} from './types';
 import { MnemonicService } from './mnemonic.service';
 import { EncryptionService } from './encryption.service';
 import { ImageService } from './image.service';
@@ -33,10 +39,22 @@ export class AppService {
     await this.imageService.removeTmpDokerfile(dockerFileName);
 
     // proxy creation:
-    const response = await this.proxyService.createChild({
+    const config = {
       package: imageHash,
       ...params,
+    };
+    const response = await this.proxyService.createChild(config);
+
+    const prevDeployments: DeploymentDetails[] = ((await this.redisService.get(
+      `d-${config.user}`,
+    )) || []) as DeploymentDetails[];
+
+    prevDeployments.push({
+      ...config,
+      link: response.link,
     });
+
+    await this.redisService.set(`d-${params.user}`, prevDeployments);
 
     return response.link;
   }
@@ -56,6 +74,32 @@ export class AppService {
     await this.redisService.set(`ph-${user}`, await this.encryptionService.encrypt(phrase));
     await this.redisService.set(`pa-${user}`, paymentAddress);
     return paymentAddress;
+  }
+
+  async deployments(params: GetPaymentAddressParams): Promise<DeploymentDetails[]> {
+    const user = params.user;
+
+    const prevDeployments = await this.redisService.get(`d-${user}`);
+    if (prevDeployments) {
+      return prevDeployments as DeploymentDetails[];
+    }
+
+    // create mock deployments
+    const mockDeployments: DeploymentDetails[] = [
+      {
+        package: 'd7f78a202dd00ce8d979db5d1a31388d408d989f9fd2cc8596c43517',
+        command: 'npm run start',
+        port: '7878',
+        link: 'http://localhost:7878',
+      },
+      {
+        package: 'd7f78a202dd00ce8d979db5d1a31388d408d989f9fd2cc8596c43517',
+        command: 'npm run start',
+        port: '7878',
+        link: 'http://localhost:7878',
+      },
+    ];
+    return mockDeployments;
   }
 
   async withdraw(params: WithdrawParams): Promise<string> {
