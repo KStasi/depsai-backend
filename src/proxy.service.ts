@@ -53,7 +53,7 @@ export class ProxyService {
       env: {
         ...process.env,
         PORT: `${childPort}`,
-        YAGNA_APPKEY: '251980da6e494394ae81115ec6e838ae',
+        YAGNA_APPKEY: process.env.YAGNA_AUTOCONF_APPKEY,
         USER_PORT: '7878',
         RUN_COMMAND: 'npm run start',
         PACKAGE: 'd7f78a202dd00ce8d979db5d1a31388d408d989f9fd2cc8596c43517',
