@@ -52,6 +52,8 @@ pids
 *.seed
 *.pid.lock
 
+golem*
+tmp/*.tmp
 redis
 
 # Diagnostic reports (https://nodejs.org/api/report.html)

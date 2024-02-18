@@ -23,8 +23,14 @@ export class AppController {
   }
 
   @Post('deploy')
-  async deploy(@Body() params: DeployParams): Promise<string> {
-    return this.appService.deploy(params);
+  async deploy(@Body() params: DeployParams): Promise<{
+    imageHash: string;
+  }> {
+    const imageHash = await this.appService.deploy(params);
+
+    return {
+      imageHash,
+    };
   }
 
   @Get('deposit')

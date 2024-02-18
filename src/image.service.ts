@@ -26,11 +26,16 @@ export class ImageService {
     const { stderr, stdout } = await execFilePromise(
       `sh ${scriptPath} ${imageName} ${dockerFilePath}`,
     );
-
     console.log('stdout:', stdout);
     console.log('stderr:', stderr);
 
-    return imageName;
+    const imageHash = stdout
+      .split('\n')
+      .find((line) => line.includes('for use in SDK'))
+      .split(' ')
+      .at(-1);
+
+    return imageHash;
   }
   async removeTmpDokerfile(dockerFileName: string): Promise<void> {
     const filePath = path.join(__dirname, '../tmp', `${dockerFileName}.tmp`);

@@ -24,10 +24,10 @@ export class AppService {
     const image = params.image;
     const dockerFileName =
       await this.imageService.createDockerfileForGolem(image);
-    const imageName =
+    const imageHash =
       await this.imageService.buildImageForGolem(dockerFileName);
     await this.imageService.removeTmpDokerfile(dockerFileName);
-    return imageName;
+    return imageHash;
   }
 
   async deposit(params: GetPaymentAddressParams): Promise<string> {
