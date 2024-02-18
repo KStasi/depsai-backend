@@ -59,4 +59,9 @@ export class AppController {
   async withdraw(@Body() params: WithdrawParams): Promise<string> {
     return this.appService.withdraw(params);
   }
+
+  @Get('*')
+  async empty(): Promise<string> {
+    return 'Empty';
+  }
 }
