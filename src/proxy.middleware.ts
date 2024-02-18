@@ -14,13 +14,13 @@ export class ProxyMiddleware implements NestMiddleware {
   ) {}
 
   use(req: Request, res: Response, next: NextFunction) {
-    console.log(req.hostname);
+    // console.log(req.hostname);
 
     const subdomain = req.hostname.split('.')[0];
-    console.log('subdomain', subdomain);
-    const domain = this.configService.get<string>('DOMAIN');
+    // console.log('subdomain', subdomain);
+    // const domain = this.configService.get<string>('DOMAIN');
 
-    if (subdomain === domain) {
+    if (subdomain === 'localhost' || subdomain === 'depsai') {
       // Default route for Server A
       return next();
     } else {

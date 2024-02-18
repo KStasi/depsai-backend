@@ -10,15 +10,15 @@ services:
     expose:
       - '6379'
     restart: on-failure
-  yagna:
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile.yagna
-    ports:
-      - '7477:7477'
-    expose:
-      - '7477'
-    restart: on-failure
+  # yagna:
+  #   build:
+  #     context: .
+  #     dockerfile: ./docker/Dockerfile.yagna
+  #   ports:
+  #     - '7477:7477'
+  #   expose:
+  #     - '7477'
+  #   restart: on-failure
   app:
     build:
       context: .
@@ -33,7 +33,7 @@ services:
       NETWORK: goerli
     depends_on:
       - redis
-      - yagna
+      # - yagna
     volumes:
       - ./src:/usr/src/app/src
       - /var/run/docker.sock:/var/run/docker.sock
