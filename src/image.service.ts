@@ -32,7 +32,7 @@ export class ImageService {
     const imageHash = stdout
       .split('\n')
       .find((line) => line.includes('for use in SDK'))
-      .split(' ')
+      ?.split(' ')
       .at(-1);
 
     return imageHash;
