@@ -25,10 +25,12 @@ export class AppService {
     // TODO: check request signature
 
     const image = params.image;
-    const dockerFileName = await this.imageService.createDockerfileForGolem(image);
-    const imageName = await this.imageService.buildImageForGolem(dockerFileName);
+    const dockerFileName =
+      await this.imageService.createDockerfileForGolem(image);
+    const imageHash =
+      await this.imageService.buildImageForGolem(dockerFileName);
     await this.imageService.removeTmpDokerfile(dockerFileName);
-    return imageName;
+    return imageHash;
   }
 
   async deposit(params: GetPaymentAddressParams): Promise<string> {
@@ -43,7 +45,10 @@ export class AppService {
     const wallet = this.mnemonicService.createWallet(phrase);
     const paymentAddress = wallet.address;
 
-    await this.redisService.set(`ph-${user}`, await this.encryptionService.encrypt(phrase));
+    await this.redisService.set(
+      `ph-${user}`,
+      await this.encryptionService.encrypt(phrase),
+    );
     await this.redisService.set(`pa-${user}`, paymentAddress);
     return paymentAddress;
   }
