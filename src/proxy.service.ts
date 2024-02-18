@@ -14,7 +14,7 @@ console.log('executorPath', executorPath);
 export class ProxyService {
   childMap = new Map<string, ChildProcessWithoutNullStreams>();
   portMap = new Map<string, number>();
-  startChildPort = 7000;
+  startChildPort = 6500;
   currentChildId = 0;
 
   domain: string;
