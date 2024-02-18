@@ -67,6 +67,8 @@ export class ProxyService {
 
     const env = this.prepareConfig(config);
 
+    console.log('env', env);
+
     const child = spawn(node, [/*'--loader', 'ts-node/esm'*/ executorPath], {
       env: {
         ...process.env,
