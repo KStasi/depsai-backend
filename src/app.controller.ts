@@ -31,8 +31,9 @@ export class AppController {
   async deposit(@Query() params: GetPaymentAddressParams): Promise<string> {
     return this.appService.deposit(params);
   }
-  @Get('withdraw')
-  async withdraw(@Query() params: WithdrawParams): Promise<string> {
+
+  @Post('withdraw')
+  async withdraw(@Body() params: WithdrawParams): Promise<string> {
     return this.appService.withdraw(params);
   }
 }

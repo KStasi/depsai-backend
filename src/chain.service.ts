@@ -6,9 +6,7 @@ import { ethers } from 'ethers';
 export class ChainService {
   public provider;
   constructor(private readonly configService: ConfigService) {
-    this.provider = ethers.getDefaultProvider(
-      configService.get<string>('NETWORK')!,
-    );
+    this.provider = ethers.getDefaultProvider(configService.get<string>('NETWORK')!);
   }
 
   async getBalance(address: string, asset: string): Promise<string> {
@@ -17,31 +15,22 @@ export class ChainService {
       const balance = await this.provider.getBalance(address);
       return balance.toString();
     }
-    const contractABI = [
-      'function balanceOf(address owner) view returns (uint256)',
-    ];
+    const contractABI = ['function balanceOf(address owner) view returns (uint256)'];
     const contract = new ethers.Contract(asset, contractABI, this.provider);
     const balance = await contract.balanceOf(address);
     return balance.toString();
   }
 
-  async transfer(
-    key: string,
-    to: string,
-    asset: string,
-    amount: string,
-  ): Promise<string> {
+  async transfer(key: string, to: string, asset: string, amount: bigint): Promise<string> {
     const wallet = new ethers.Wallet(key, this.provider);
     let tx;
-    if (asset === 'ETH') {
+    if (asset.toLocaleUpperCase() === 'ETH') {
       tx = await wallet.sendTransaction({
         to,
-        value: ethers.parseEther(amount),
+        value: amount,
       });
     } else {
-      const contractABI = [
-        'function transfer(address to, uint256 value) returns (bool)',
-      ];
+      const contractABI = ['function transfer(address to, uint256 value) returns (bool)'];
       const contract = new ethers.Contract(asset, contractABI, wallet);
       tx = await contract.transfer(to, amount);
     }

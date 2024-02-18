@@ -18,9 +18,7 @@ export class EncryptionService {
       hexToBuffer(this.configService.get<string>('ENCRYPTION_IV')),
     );
 
-    return Buffer.from(
-      cipher.update(data, 'utf8', 'hex') + cipher.final('hex'),
-    ).toString('base64');
+    return Buffer.from(cipher.update(data, 'utf8', 'hex') + cipher.final('hex')).toString('base64');
   }
 
   async decrypt(encryptedData: string): Promise<string> {
@@ -31,9 +29,6 @@ export class EncryptionService {
       hexToBuffer(this.configService.get<string>('ENCRYPTION_IV')),
     );
 
-    return (
-      decipher.update(buff.toString('utf8'), 'hex', 'utf8') +
-      decipher.final('utf8')
-    );
+    return decipher.update(buff.toString('utf8'), 'hex', 'utf8') + decipher.final('utf8');
   }
 }
