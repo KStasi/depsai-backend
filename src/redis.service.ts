@@ -27,6 +27,21 @@ export class RedisService {
     }
   }
 
+  async getAll<T extends object | string>(pattern: string): Promise<T[]> {
+    const value = await this.client.keys(pattern);
+    try {
+      if (!value) {
+        return undefined;
+      }
+
+      return value as T[];
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        return value as T[];
+      }
+    }
+  }
+
   async set<T extends object | string>(key: string, value: T) {
     const stringValue = JSON.stringify(value);
 
