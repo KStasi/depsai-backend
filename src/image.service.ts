@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { Mnemonic, ethers } from 'ethers';
 import { exec } from 'child_process';
-const fs = require('fs');
-const path = require('node:path');
-const util = require('node:util');
+import * as fs from 'fs';
+import * as path from 'node:path';
+import * as util from 'node:util';
 
 const execFilePromise = util.promisify(exec);
 const generateRandomDockerFileName = (): string =>
@@ -46,7 +45,7 @@ export class ImageService {
       'create-tmp-docker-file.sh',
     );
 
-    const { stderr, stdout } = await execFilePromise(
+    const { stdout } = await execFilePromise(
       `sh ${scriptPath} ${baseImage} ${dockerFileName}`,
     );
 

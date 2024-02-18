@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CacheModule, CacheModuleAsyncOptions } from '@nestjs/cache-manager';
@@ -9,6 +9,8 @@ import { MnemonicService } from './mnemonic.service';
 import { EncryptionService } from './encryption.service';
 import { ImageService } from './image.service';
 import { ChainService } from './chain.service';
+import { ProxyService } from './proxy.service';
+import { ProxyMiddleware } from './proxy.middleware';
 
 export const RedisOptions: CacheModuleAsyncOptions = {
   isGlobal: true,
@@ -40,6 +42,11 @@ export const RedisOptions: CacheModuleAsyncOptions = {
     EncryptionService,
     ImageService,
     ChainService,
+    ProxyService,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(ProxyMiddleware).forRoutes(AppController);
+  }
+}
