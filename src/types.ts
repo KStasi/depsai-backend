@@ -41,6 +41,8 @@ export type DeploymentDetails = {
   minCpuCores?: string;
   budget?: string;
   link: string;
+  status: string;
+  generatedId?: string;
 };
 
 export type ChildConfig = {

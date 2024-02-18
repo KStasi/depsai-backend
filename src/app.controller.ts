@@ -34,16 +34,19 @@ export class AppController {
 
   @Post('deploy')
   async deploy(@Body() params: DeployParams): Promise<{
-    link: string;
+    message: string;
   }> {
-    const link = await this.appService.deploy(params);
+    this.appService.deploy(params);
+
     return {
-      link,
+      message: 'Deploying...',
     };
   }
 
   @Get('deployments')
-  async deployments(@Query() params: DeploymentsParams): Promise<DeploymentDetails[]> {
+  async deployments(
+    @Query() params: DeploymentsParams,
+  ): Promise<DeploymentDetails[]> {
     return this.appService.deployments(params);
   }
 

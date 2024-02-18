@@ -1,7 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { RedisService } from './redis.service';
 import {
-  ChildConfig,
   DeployParams,
   DeploymentDetails,
   GetPaymentAddressParams,
@@ -30,13 +29,31 @@ export class AppService {
   }
 
   async deploy(params: DeployParams): Promise<string> {
-    // TODO: check request signature
+    const generatedId = Math.random().toString(36).substring(7);
+
+    await this.updateDeployment({
+      ...params,
+      generatedId,
+      package: '',
+      link: '',
+      status: 'deploying',
+    });
 
     // image preparation:
     const image = params.image;
-    const dockerFileName = await this.imageService.createDockerfileForGolem(image);
-    const imageHash = await this.imageService.buildImageForGolem(dockerFileName);
+    const dockerFileName =
+      await this.imageService.createDockerfileForGolem(image);
+    const imageHash =
+      await this.imageService.buildImageForGolem(dockerFileName);
     await this.imageService.removeTmpDokerfile(dockerFileName);
+
+    await this.updateDeployment({
+      ...params,
+      generatedId,
+      package: imageHash,
+      link: '',
+      status: 'image created',
+    });
 
     // proxy creation:
     const config = {
@@ -45,18 +62,36 @@ export class AppService {
     };
     const response = await this.proxyService.createChild(config);
 
-    const prevDeployments: DeploymentDetails[] = ((await this.redisService.get(
-      `d-${config.user}`,
-    )) || []) as DeploymentDetails[];
-
-    prevDeployments.push({
-      ...config,
+    await this.updateDeployment({
+      ...params,
+      generatedId,
+      package: imageHash,
       link: response.link,
+      status: 'deployed',
     });
 
-    await this.redisService.set(`d-${params.user}`, prevDeployments);
+    console.log('deployed', response.link);
 
     return response.link;
+  }
+
+  async updateDeployment(
+    params: DeploymentDetails & { user: string },
+  ): Promise<void> {
+    const prevDeployments: DeploymentDetails[] = ((await this.redisService.get(
+      `d-${params.user}`,
+    )) || []) as DeploymentDetails[];
+
+    const index = prevDeployments.findIndex(
+      (d) => d.generatedId === params.generatedId,
+    );
+    if (index !== -1) {
+      prevDeployments[index] = params;
+    } else {
+      prevDeployments.push(params);
+    }
+
+    await this.redisService.set(`d-${params.user}`, prevDeployments);
   }
 
   async deposit(params: GetPaymentAddressParams): Promise<string> {
@@ -71,12 +106,17 @@ export class AppService {
     const wallet = this.mnemonicService.createWallet(phrase);
     const paymentAddress = wallet.address;
 
-    await this.redisService.set(`ph-${user}`, await this.encryptionService.encrypt(phrase));
+    await this.redisService.set(
+      `ph-${user}`,
+      await this.encryptionService.encrypt(phrase),
+    );
     await this.redisService.set(`pa-${user}`, paymentAddress);
     return paymentAddress;
   }
 
-  async deployments(params: GetPaymentAddressParams): Promise<DeploymentDetails[]> {
+  async deployments(
+    params: GetPaymentAddressParams,
+  ): Promise<DeploymentDetails[]> {
     const user = params.user;
 
     const prevDeployments = await this.redisService.get(`d-${user}`);
@@ -91,12 +131,14 @@ export class AppService {
         command: 'npm run start',
         port: '7878',
         link: 'http://localhost:7878',
+        status: 'deployed',
       },
       {
         package: 'd7f78a202dd00ce8d979db5d1a31388d408d989f9fd2cc8596c43517',
         command: 'npm run start',
         port: '7878',
         link: 'http://localhost:7878',
+        status: 'deployed',
       },
     ];
     return mockDeployments;

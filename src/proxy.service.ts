@@ -32,7 +32,11 @@ export class ProxyService {
     });
   }
 
-  registerChild(networkId: string, port: number, child: ChildProcessWithoutNullStreams) {
+  registerChild(
+    networkId: string,
+    port: number,
+    child: ChildProcessWithoutNullStreams,
+  ) {
     this.childMap.set(networkId, child);
     this.portMap.set(networkId, port);
 
